@@ -37,6 +37,7 @@ const dotenv = __importStar(require("dotenv"));
 const recursiveReadDir_js_1 = __importDefault(require("./modules/recursiveReadDir.js"));
 const mongodb_1 = require("mongodb");
 const process_1 = require("process");
+const getUnixTimestamp_js_1 = __importDefault(require("./modules/getUnixTimestamp.js"));
 dotenv.config();
 // Log Intro
 let currentDate = new Date();
@@ -89,8 +90,30 @@ client.on(discord_js_1.Events.InteractionCreate, async (interaction) => {
     if (!interaction.isChatInputCommand())
         return;
     const command = client.commands.get(interaction.commandName);
+    const executedCommandsCollection = db.collection("required:command_executions");
+    // Cooldown Manager
+    let lastExecution = await executedCommandsCollection.findOne({
+        cooldown_till: {
+            $gt: (0, getUnixTimestamp_js_1.default)()
+        }
+    });
+    if (lastExecution !== null) {
+        interaction.reply({
+            content: `⌛ You're going a bit too fast... You can run this command again in <t:${lastExecution.cooldown_till}:R>`,
+            ephemeral: true
+        });
+        return;
+    }
+    // Insert Command to DB
+    const cooldown = command.settings?.cooldown || 0;
+    await executedCommandsCollection.insertOne({
+        timestamp: (0, getUnixTimestamp_js_1.default)(),
+        cooldown_till: (0, getUnixTimestamp_js_1.default)() + cooldown,
+        executor: interaction.user.id,
+        command_details: command.data
+    });
     if (!command) {
-        await interaction.followUp({ content: 'We couldnt index this command. Please contact `@ratzifutzi` for support.', ephemeral: true });
+        await interaction.reply({ content: 'We couldnt index this command. Please contact `@ratzifutzi` for support.', ephemeral: true });
         console.log(`⚠️ There is no command matching ${interaction.commandName}.`);
         return;
     }
