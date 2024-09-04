@@ -10,9 +10,12 @@
   "license": "ISC",
   "dependencies": {
     "@types/node": "^20.12.7",
-    "discord.js": "^14.14.1",
+    "discord.js": "^14.12.1",
     "dotenv": "^16.4.5",
     "mongodb": "6.5",
     "typescript": "^5.4.5"
+  },
+  "devDependencies": {
+    "prettier": "3.2.5"
   }
 }
