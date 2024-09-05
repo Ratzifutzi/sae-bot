@@ -7,4 +7,7 @@ module.exports = {
 	async execute(client: Client) {
 		console.log(`☑️  Logged in as ${client.user?.tag}`);
 	}
+
+	// Infoscreen extraction test
+	
 }

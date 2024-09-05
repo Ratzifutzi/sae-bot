@@ -24,9 +24,9 @@ console.log("    -- BEGIN BOT LOG OUTRO --");
 
 // Configurations
 const botIntents: GatewayIntentBits[] = [
-    GatewayIntentBits.Guilds,
-    GatewayIntentBits.GuildMessages,
-    GatewayIntentBits.MessageContent,
+	GatewayIntentBits.Guilds,
+	GatewayIntentBits.GuildMessages,
+	GatewayIntentBits.MessageContent,
 ]
 
 const eventsPath: PathLike = "./bot/events"
@@ -45,16 +45,16 @@ let commands: {}[] = []
 
 const commandFiles = RecursiveReadDir(commandsPath)
 for (let file of commandFiles) {
-    const command: { data: SlashCommandBuilder, execute: Function } = require("./" + file)
+	const command: { data: SlashCommandBuilder, execute: Function } = require("./" + file)
 
-    if ('data' in command && 'execute' in command) {
-        commands.push(command.data.toJSON());
-        client.commands.set(command.data.name, command);
+	if ('data' in command && 'execute' in command) {
+		commands.push(command.data.toJSON());
+		client.commands.set(command.data.name, command);
 
-        console.log("   🔗 " + file);
-    } else {
-        console.log(`   ❌ ${file} is missing "data" or "execute" property. Index skipped`);
-    }
+		console.log("   🔗 " + file);
+	} else {
+		console.log(`   ❌ ${file} is missing "data" or "execute" property. Index skipped`);
+	}
 }
 
 console.log("✅ Indexed commands");
@@ -64,66 +64,66 @@ console.log("🕝 Deploying Commands to Discord");
 
 const rest: REST = new REST().setToken(process.env.BOT_TOKEN);
 (async () => {
-    try {
-        await rest.put(
-            Routes.applicationCommands(process.env.APP_ID),
-            { body: commands },
-        );
+	try {
+		await rest.put(
+			Routes.applicationCommands(process.env.APP_ID),
+			{ body: commands },
+		);
 
-        console.log(`☑️  Successfully deployed and reloaded commands`);
-    } catch (error) {
-        console.error(error);
-    }
+		console.log(`☑️  Successfully deployed and reloaded commands`);
+	} catch (error) {
+		console.error(error);
+	}
 })();
 
 // Bind Command Handler
 client.on(Events.InteractionCreate, async (interaction: Interaction) => {
-    if (!interaction.isChatInputCommand()) return;
+	if (!interaction.isChatInputCommand()) return;
 
-    const command: botCommandExport = client.commands.get(interaction.commandName);
-    const executedCommandsCollection = db.collection("required:command_executions")
+	const command: botCommandExport = client.commands.get(interaction.commandName);
+	const executedCommandsCollection = db.collection("required:command_executions")
 
-    // Cooldown Manager
-    let lastExecution = await executedCommandsCollection.findOne({
-        cooldown_till: {
-            $gt: getUnixTimestamp()
-        }
-    })
+	// Cooldown Manager
+	let lastExecution = await executedCommandsCollection.findOne({
+		cooldown_till: {
+			$gt: getUnixTimestamp()
+		}
+	})
 
-    if(lastExecution !== null) {
-        interaction.reply( {
-            content: `⌛ You're going a bit too fast... You can run this command again in <t:${lastExecution.cooldown_till}:R>`,
-            ephemeral: true
-        } )
+	if (lastExecution !== null) {
+		interaction.reply({
+			content: `⌛ You're going a bit too fast... You can run this command again in <t:${lastExecution.cooldown_till}:R>`,
+			ephemeral: true
+		})
 
-        return;
-    }
+		return;
+	}
 
-    // Insert Command to DB
-    const cooldown = command.settings?.cooldown || 0
-    await executedCommandsCollection.insertOne({
-        timestamp: getUnixTimestamp(),
-        cooldown_till: getUnixTimestamp() + cooldown,
-        executor: interaction.user.id,
-        command_details: command.data
-    })
+	// Insert Command to DB
+	const cooldown = command.settings?.cooldown || 0
+	await executedCommandsCollection.insertOne({
+		timestamp: getUnixTimestamp(),
+		cooldown_till: getUnixTimestamp() + cooldown,
+		executor: interaction.user.id,
+		command_details: command.data
+	})
 
-    if (!command) {
-        await interaction.reply({ content: 'We couldnt index this command. Please contact `@ratzifutzi` for support.', ephemeral: true });
-        console.log(`⚠️ There is no command matching ${interaction.commandName}.`);
-        return;
-    }
+	if (!command) {
+		await interaction.reply({ content: 'We couldnt index this command. Please contact `@ratzifutzi` for support.', ephemeral: true });
+		console.log(`⚠️ There is no command matching ${interaction.commandName}.`);
+		return;
+	}
 
-    try {
-        await command.execute(interaction);
-    } catch (error) {
-        console.error(error);
-        if (interaction.replied || interaction.deferred) {
-            await interaction.followUp({ content: 'We ran into issues while trying to execute this command. Please contact `@ratzifutzi` for support.', ephemeral: true });
-        } else {
-            await interaction.reply({ content: 'We ran into issues while trying to execute this command. Please contact `@ratzifutzi` for support.', ephemeral: true });
-        }
-    }
+	try {
+		await command.execute(interaction);
+	} catch (error) {
+		console.error(error);
+		if (interaction.replied || interaction.deferred) {
+			await interaction.followUp({ content: 'We ran into issues while trying to execute this command. Please contact `@ratzifutzi` for support.', ephemeral: true });
+		} else {
+			await interaction.reply({ content: 'We ran into issues while trying to execute this command. Please contact `@ratzifutzi` for support.', ephemeral: true });
+		}
+	}
 })
 
 // Bind Event Routes
@@ -131,15 +131,15 @@ console.log("⌛ Binding Event Routes");
 
 const eventFiles = RecursiveReadDir(eventsPath)
 for (let file of eventFiles) {
-    const event: { once: boolean, name: keyof ClientEvents, execute: Function } = require("./" + file)
+	const event: { once: boolean, name: keyof ClientEvents, execute: Function } = require("./" + file)
 
-    if (event.once) {
-        client.once(event.name, (...args) => event.execute(...args));
-    } else {
-        client.on(event.name, (...args) => event.execute(...args));
-    }
+	if (event.once) {
+		client.once(event.name, (...args) => event.execute(...args));
+	} else {
+		client.on(event.name, (...args) => event.execute(...args));
+	}
 
-    console.log("   🔗 " + file);
+	console.log("   🔗 " + file);
 }
 
 console.log("✅ Events bound");
@@ -160,5 +160,5 @@ client.login(process.env.BOT_TOKEN)
 
 // Exports
 export {
-    db
+	db
 }
