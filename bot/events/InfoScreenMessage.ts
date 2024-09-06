@@ -115,7 +115,7 @@ module.exports = {
 			.setDescription(`
 - Webscraped aus dem [Infoscreen](https://infoscreen.sae.ch).
 - Zeigt nur anstehende Termine an
-- Manche Termine haben einen Zoom Link angeheftet`
+- Manche Termine haben einen Zoom Link angeheftet. Dies kann an der Kamera links vom Termin Namen erkannt werden. (<:videooff:1281582613986807830> & <:video:1281582600754040893>)`
 )
 			.setColor("White")
 
