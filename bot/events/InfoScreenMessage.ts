@@ -147,19 +147,19 @@ module.exports = {
 					if(href !== undefined) {
 						embed.setURL(href)
 						embed.setTitle( "<:video:1281582600754040893> - " + subjectAndLecturer )
-					} else {
-						embed.setTitle( "<:videooff:1281582613986807830> - " + subjectAndLecturer )
 					}
+				} else {
+					embed.setTitle( "<:videooff:1281582613986807830> - " + subjectAndLecturer )
 				}
 
 				// Add to final array
 				embeds.push(embed)
 			} )
 
-			if(embeds.length === 0) {
+			if(embeds.length === 1) {
 				let replacementEmbed = new EmbedBuilder()
 					.setTitle("Kalender Leer")
-					.setDescription("Heute gibt es keinen anstehenden Unterricht.")
+					.setDescription("Heute gibt es keine anstehenden Termine.")
 					.setColor("White")
 
 				embeds.push(replacementEmbed)
@@ -169,7 +169,7 @@ module.exports = {
 			let lastEmbed = embeds.at(-1)
 			lastEmbed?.setTimestamp()
 			lastEmbed?.setFooter({
-				"text": "Zuletzt geupdated"
+				"text": "Letztes Update"
 			})
 
 			// Edit the message with all embeds
