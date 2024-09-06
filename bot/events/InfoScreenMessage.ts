@@ -108,6 +108,18 @@ module.exports = {
 
 			// Prepare a new embed list where we'll put our embeds to send
 			let embeds: EmbedBuilder[] = []
+
+			// Add Intro Embed
+			let introEmbed = new EmbedBuilder()
+			.setTitle("Anstehende Termine")
+			.setDescription(`
+- Webscraped aus dem [Infoscreen](https://infoscreen.sae.ch).
+- Zeigt nur anstehende Termine an
+- Manche Termine haben einen Zoom Link angeheftet`
+)
+			.setColor("White")
+
+			embeds.push(introEmbed)
 	
 			// Parse
 			const selector = cheerio.load(rawInfoScreen);
@@ -117,19 +129,31 @@ module.exports = {
 				const timeAndLocation = selector(box).find(".unterrichtsBox_Uhrzeit").text()
 				const subjectAndLecturer = selector(box).find(".unterrichtsBox_UnterrichtUndDozent").text()
 				const iconUrl = selector(box).find(".unterrichtsBox_Symbol>img").attr("src")
+				const parent = selector(box).parent()
 				
 				// Create embed
 				let embed = new EmbedBuilder()
-				.setTitle( subjectAndLecturer )
 				.setAuthor({
 					name: classId,
 					iconURL: "https://infoscreen.sae.ch/" + iconUrl
 				})
 				.setDescription(timeAndLocation)
-				.setColor("White")
+				.setColor("LightGrey")
 
+				// Add Zoom link if there is one
+				if(parent.is("a") ) {
+					const href = parent.attr("href")
+					
+					if(href !== undefined) {
+						embed.setURL(href)
+						embed.setTitle( "<:video:1281582600754040893> - " + subjectAndLecturer )
+					} else {
+						embed.setTitle( "<:videooff:1281582613986807830> - " + subjectAndLecturer )
+					}
+				}
+
+				// Add to final array
 				embeds.push(embed)
-				
 			} )
 
 			if(embeds.length === 0) {
@@ -145,7 +169,7 @@ module.exports = {
 			let lastEmbed = embeds.at(-1)
 			lastEmbed?.setTimestamp()
 			lastEmbed?.setFooter({
-				"text": "View bot about me page to learn how to contribute"
+				"text": "Zuletzt geupdated"
 			})
 
 			// Edit the message with all embeds
