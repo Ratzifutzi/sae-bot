@@ -1,0 +1,1 @@
+pm2 restart 9 --max-restarts 5

@@ -134,9 +134,19 @@ for (let file of eventFiles) {
 	const event: { once: boolean, name: keyof ClientEvents, execute: Function } = require("./" + file)
 
 	if (event.once) {
-		client.once(event.name, (...args) => event.execute(...args));
+		try {
+			client.once(event.name, (...args) => event.execute(...args));
+		} catch (error) {
+			console.log("❌ Error with", event.name);
+			console.log(error);
+		}
 	} else {
-		client.on(event.name, (...args) => event.execute(...args));
+		try {
+			client.on(event.name, (...args) => event.execute(...args));
+		} catch (error) {
+			console.log("❌ Error with", event.name);
+			console.log(error);
+		}
 	}
 
 	console.log("   🔗 " + file);

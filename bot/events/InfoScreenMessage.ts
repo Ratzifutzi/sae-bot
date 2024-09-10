@@ -130,11 +130,21 @@ module.exports = {
 				const subjectAndLecturer = selector(box).find(".unterrichtsBox_UnterrichtUndDozent").text()
 				const iconUrl = selector(box).find(".unterrichtsBox_Symbol>img").attr("src")
 				const parent = selector(box).parent()
+
+				// Create a signle embed for everything if there are more than 9 events today
+				if(boxes.length >= 10) {
+					introEmbed.addFields({
+						"name": classId,
+						"value": subjectAndLecturer
+					})
+
+					return;
+				}
 				
 				// Create embed
 				let embed = new EmbedBuilder()
 				.setAuthor({
-					name: classId,
+					name: classId && "Kein Klassenname",
 					iconURL: "https://infoscreen.sae.ch/" + iconUrl
 				})
 				.setDescription(timeAndLocation)
@@ -156,11 +166,22 @@ module.exports = {
 				embeds.push(embed)
 			} )
 
-			if(embeds.length === 1) {
+			// Show embed if there are no appoiments
+			if(boxes.length === 0) {
 				let replacementEmbed = new EmbedBuilder()
 					.setTitle("Kalender Leer")
 					.setDescription("Heute gibt es keine anstehenden Termine.")
 					.setColor("White")
+
+				embeds.push(replacementEmbed)
+			}
+
+			// Show embed if there are too many events
+			if(boxes.length >= 10) {
+				let replacementEmbed = new EmbedBuilder()
+					.setTitle("Zu viele Events")
+					.setDescription("Heute gibt es zu viele anstehenden Termine. Klassen Icons & Zoom Links können nur auf der Website nachgesehen werden.")
+					.setColor("Yellow")
 
 				embeds.push(replacementEmbed)
 			}
