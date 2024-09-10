@@ -135,7 +135,7 @@ module.exports = {
 				if(boxes.length >= 10) {
 					introEmbed.addFields({
 						"name": classId,
-						"value": subjectAndLecturer
+						"value": subjectAndLecturer + " - **" + timeAndLocation + "**"
 					})
 
 					return;
