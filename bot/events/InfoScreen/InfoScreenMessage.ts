@@ -84,7 +84,7 @@ module.exports = {
 			return displayedMessage
 		}
 
-		// This func will be called at program start and after that every day at 6AM
+		// This func will be called at program start and after that every hour
 		async function sendMessage() {
 			let message = await getMessage()
 
@@ -186,7 +186,7 @@ module.exports = {
 				embeds.push(replacementEmbed)
 			}
 			
-			// Add contribute Footer
+			// Add Footer
 			let lastEmbed = embeds.at(-1)
 			lastEmbed?.setTimestamp()
 			lastEmbed?.setFooter({
