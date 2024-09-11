@@ -1,5 +1,5 @@
-import { Channel, Client, Embed, EmbedBuilder, Events, Message, TextChannel } from "discord.js";
-import { db } from "../../bot";
+import { ActionRowBuilder, ButtonBuilder, ButtonStyle, Channel, Client, Embed, EmbedBuilder, Events, Message, TextChannel } from "discord.js";
+import { db } from "../../../bot";
 import * as cheerio from "cheerio";
 import axios from "axios";
 import * as schedule from 'node-schedule';
@@ -134,7 +134,7 @@ module.exports = {
 				// Create a signle embed for everything if there are more than 9 events today
 				if(boxes.length >= 10) {
 					introEmbed.addFields({
-						"name": classId,
+						"name": classId || "Kein Klassenname",
 						"value": subjectAndLecturer + " - **" + timeAndLocation + "**"
 					})
 
@@ -144,7 +144,7 @@ module.exports = {
 				// Create embed
 				let embed = new EmbedBuilder()
 				.setAuthor({
-					name: classId && "Kein Klassenname",
+					name: classId || "Kein Klassenname",
 					iconURL: "https://infoscreen.sae.ch/" + iconUrl
 				})
 				.setDescription(timeAndLocation)
@@ -193,10 +193,21 @@ module.exports = {
 				"text": "Letztes Update"
 			})
 
+			// Add Buttons
+			const infoButton = new ButtonBuilder()
+			.setCustomId("infoscreen-options")
+			.setLabel("Einstellungen")
+			.setStyle( ButtonStyle.Secondary )
+			.setEmoji("<:testingphase:1283449156794585138>")
+
+			const buttonRow = new ActionRowBuilder<ButtonBuilder>()
+			buttonRow.addComponents( infoButton )
+
 			// Edit the message with all embeds
 			message.edit({
 				content: "",
-				embeds: embeds
+				embeds: embeds,
+				components: [buttonRow]
 			})
 		}
 
