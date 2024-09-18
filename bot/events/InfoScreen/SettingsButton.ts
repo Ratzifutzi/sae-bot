@@ -11,25 +11,12 @@ module.exports = {
 		
 		const args = interaction.customId.split("-")
 		if(args[0] !== "infoscreen") return;
-
-		// Temporary Permission Lock
-		if(interaction.user.id !== "508557236415627264") {
-			interaction.reply({
-				ephemeral: true,
-				embeds: [
-					new EmbedBuilder()
-					.setTitle("<:testingphase:1283449156794585138> Geschlossene Beta")
-					.setDescription("Du hast aktuell keinen Zugriff auf diese Beta.")
-					.setColor("Red")
-				]
-			})
-
-			return;
-		}
 		
 		// Primary options menu
 		if(args[1] === "options") {
 			const actionRow = new ActionRowBuilder<ButtonBuilder>()
+
+			// Create Subscription Button
 			const subscriptionCollection = db.collection("subscriptions")
 
 			const subscriptionDocument = await subscriptionCollection.findOne({
@@ -42,6 +29,7 @@ module.exports = {
 				actionRow.addComponents( new ButtonBuilder()
 				.setCustomId("infoscreen-subscribe")
 				.setLabel("Kalender abonnieren")
+				.setEmoji("<:bell:1283857360028434482>")
 				.setStyle(ButtonStyle.Success)
 				)
 			} else {
@@ -55,9 +43,18 @@ module.exports = {
 				actionRow.addComponents( new ButtonBuilder()
 				.setCustomId("infoscreen-unsubscribe")
 				.setLabel("Kalender deabonnieren")
+				.setEmoji("<:belloff:1283857394882969643>")
 				.setStyle(ButtonStyle.Danger)
 				)
 			}
+
+			// Create Feedback Button
+			actionRow.addComponents( new ButtonBuilder()
+			.setCustomId("form-feedback")
+			.setEmoji("<:feedback:1283835932566491198>")
+			.setLabel("Feeedback senden")
+			.setStyle(ButtonStyle.Primary)
+			)
 
 			interaction.reply({
 				ephemeral: true,

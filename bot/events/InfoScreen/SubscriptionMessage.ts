@@ -78,6 +78,6 @@ Heute hast du folgenden Termin:
 		}
 
 		// Cron job for sending the messages at 7AM
-		const cronJob = schedule.scheduleJob('* 07 * * *', sendMessage);
+		schedule.scheduleJob('0 07 * * *', sendMessage);
 	}
 };
